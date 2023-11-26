@@ -1,23 +1,23 @@
 ﻿using HarmonyLib;
+using UnityEngine;
+using System.Reflection;
 
-[HarmonyPatch(typeof(Turret))]
-[HarmonyPatch("Update")]
-class TurretPatch
+namespace LCInstantFiring.Patches
 {
-    static void Postfix(Turret __instance, ref float _turretInterval)
+    [HarmonyPatch(typeof(Turret))]
+    internal class TurretPatch
     {
-        if (__instance.turretActive && __instance.turretMode == TurretMode.Detection)
-        {
-            if (_turretInterval >= 1.5f)
-            {
-                SetTurretMode(__instance, TurretMode.Firing);
-            }
-        }
-    }
+        private static FieldInfo turretIntervalField = typeof(Turret).GetField("turretInterval", BindingFlags.NonPublic | BindingFlags.Instance);
 
-    static void SetTurretMode(Turret turret, TurretMode mode)
-    {
-        turret.turretMode = mode;
-        turret.SetToModeClientRpc((int)mode);
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        static void Postfix(Turret __instance)
+        {
+            // Access turretInterval using reflection
+            float currentInterval = (float)turretIntervalField.GetValue(__instance);
+
+            // Modify turretInterval if needed
+            turretIntervalField.SetValue(__instance, 100f);
+        }
     }
 }

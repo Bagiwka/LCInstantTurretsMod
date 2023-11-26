@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using LCInstantFiring.Patches;
 
 namespace LCInstantTurrets
 {
